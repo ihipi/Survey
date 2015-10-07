@@ -4,6 +4,7 @@ Created on 4 oct. 2015
 @author: albert
 '''
 import FreeCADGui
+import easygui
 class Triangula():
     """My new command"""
  
@@ -37,8 +38,21 @@ class Triangula():
  
     def Activated(self):
         "Do something here"
-        import Base
-        Base.crearPunt('name', 5, 5, 5, 'Code')
+        import Base, numpy, scipy, FreeCADGui, easygui
+        from scipy.spatial import Delaunay
+        
+        sel = FreeCADGui.Selection.getSelection()
+        
+        if str(type(sel[0])) == "<type 'App.DocumentObjectGroup'>":
+            grup_llista = sel[0].OutList
+            if grup_llista[1].Tipus == "Punt" : 
+                for p in grup_llista:
+                    print (p.Label,p.Codi,p.X,p.Y,p.Z)
+                    return
+        else:   
+            easygui.msgbox('Necessites triar un grup de punts', 'Instruccions')
+
+        
         return
  
     def IsActive(self):

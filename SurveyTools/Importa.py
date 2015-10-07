@@ -143,6 +143,7 @@ class Importa():
                 grp_linies.addObject(wire)
         #print codis, code_list
         file.close()
+        FreeCADGui.SendMsgToActiveView("ViewFit")
         return
  
     def IsActive(self):

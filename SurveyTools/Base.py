@@ -41,12 +41,12 @@ def crearPunt(name = "Point",X=0, Y=0,Z=0, Code = ''):
         p1.X = 1 #move it in x
         p1.ViewObject.PointColor =(0.0,0.0,1.0) #change the color-make sure values are floats
     '''
-    obj=FreeCAD.ActiveDocument.addObject("Part::FeaturePython",name)
+    obj=FreeCAD.ActiveDocument.addObject("Part::FeaturePython",str(name))
     if isinstance(X,FreeCAD.Vector):
         Z = X.z
         Y = X.y
         X = X.x
-    Punt(obj,X,Y,Z,Code)
+    Punt(obj,name, X,Y,Z,Code)
     obj.X = X
     obj.Y = Y
     obj.Z = Z
@@ -58,14 +58,18 @@ def crearPunt(name = "Point",X=0, Y=0,Z=0, Code = ''):
 
 class Punt():
     "The Draft Point object"
-    def __init__(self, obj,x=0,y=0,z=0, c=None):
-        self.Type = "Point"
+    def __init__(self, obj,name=None,x=0,y=0,z=0, c=None):
+        obj.Label = str(name)
+        obj.addProperty("App::PropertyString","Tipus","Propietats","Descripcio").Tipus = 'Punt'
         obj.addProperty("App::PropertyString","Codi","Base","Descripcio").Codi = str(c)
         obj.addProperty("App::PropertyFloat","X","Coordenades","Location").X = x
         obj.addProperty("App::PropertyFloat","Y","Coordenades","Location").Y = y
         obj.addProperty("App::PropertyFloat","Z","Coordenades","Location").Z = z
+        
+        
         mode = 2
         obj.setEditorMode('Placement',mode)
+        obj.setEditorMode("Tipus", mode)
         obj.Proxy= self
         
 
