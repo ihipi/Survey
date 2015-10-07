@@ -40,15 +40,23 @@ class Triangula():
         "Do something here"
         import Base, numpy, scipy, FreeCADGui, easygui
         from scipy.spatial import Delaunay
+        import matplotlib.pyplot as plt
         
         sel = FreeCADGui.Selection.getSelection()
         
         if str(type(sel[0])) == "<type 'App.DocumentObjectGroup'>":
             grup_llista = sel[0].OutList
+            print grup_llista
             if grup_llista[1].Tipus == "Punt" : 
+                llistaPunts=[]
                 for p in grup_llista:
+                    llistaPunts.append([p.X,p.Y,p.Z])
                     print (p.Label,p.Codi,p.X,p.Y,p.Z)
-                    return
+                
+                points = numpy.array(llistaPunts)
+                tri = Delaunay(points)
+                print points[tri.simplices]
+            return
         else:   
             easygui.msgbox('Necessites triar un grup de punts', 'Instruccions')
 
