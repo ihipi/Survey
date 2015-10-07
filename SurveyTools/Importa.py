@@ -59,10 +59,8 @@ class Importa():
         
         file = open(fitxer, "r")                                  # open the file read
         X=Y=Z = 0.0
-        codis = []
-        code_list = []
+        codis = {}
         linies = []
-        inc = 0
         for linia in file:
            
             if linia[-1] == '\n':
@@ -70,7 +68,7 @@ class Importa():
             coordinates = linia.split('\t')
             N,X,Y,Z,C = coordinates  
             N = str(N)
-            C = str(C) 
+            C = str(C).strip() 
             
             
                      
@@ -78,37 +76,55 @@ class Importa():
             
             grp_punts.addObject(p)
             
-            cs = C.split(',')
             
-            for codi in cs:
-                codi_clean = codi.split(' ')
-                if len(codi_clean) > 1:
-                    print 'inici d linia:-----'+codi_clean[0]+'<-----\n'
-                    if   'I' in codi_clean[1]:
-                        print 'inici d linia amb "I":\n'
-                        ind = index_codis(linies,codi_clean[0] )
-                        print ind
-                        if ind:
-                            print "Ja existeix: ",ind[-1]
-                            num = int(linies[ind[-1]][0].split('_')[-1]) + 1
-    
-                            linies.append([codi_clean[0]+'_'+str(num),[FreeCAD.Vector(float(X),float(Y),float(Z))]])
-                        
-                        else:
-                            print 'linia nova' + codi_clean[0]
-                            linies.append([codi_clean[0]+'_0',[FreeCAD.Vector(float(X),float(Y),float(Z))]])
-                        
-                else:
+            codi_l = C.split(' ')
+            
+            codi_clean = str(codi_l[0])
+            codi_base = codi_clean+'_'
+            print '#############################'
+            print len(codi_l[0]),codi_clean,len(codi_clean)
+            if len(codi_l)>1:
+                if   'I' in codi_l[1]:
+                    print 'inici d linia amb "I":\n'
                     
-                    for i in range(len(linies)-1, -1, -1):
-                            
-                        lin_clean = linies[i][0].split('_')
-                        if lin_clean[0] == codi_clean[0]:
-    
-                            print 'punt de linia'
-                            linies[i][1].append(FreeCAD.Vector(float(X),float(Y),float(Z)))
+                     
+                    if codi_base in codis.keys():
+                        print "Ja existeix: ",codi_base
+                        codis[codi_base]= codis[codi_base]+1
+
+                        linies.append([codi_base+str(codis[codi_base]),[FreeCAD.Vector(float(X),float(Y),float(Z))]])
+                    
                     else:
-                        print 'punt sense linia'
+                        print 'linia nova' + codi_clean[0]
+                        codis[codi_base]= 0
+
+                        linies.append([codi_base+str(codis[codi_base]),[FreeCAD.Vector(float(X),float(Y),float(Z))]])
+                else:
+                    if codi_base in codis.keys():
+                        for lin in linies:
+                            lin_code = lin[0]
+                            print codi_base , lin_code[:len(codi_base)]
+                            if codi_base == lin_code[:len(codi_base)]:
+        
+                                print 'punt de la linia: '+ lin_code,lin[1]
+                                
+                                lin[1].append(FreeCAD.Vector(float(X),float(Y),float(Z)))
+                            else:
+                                print 'punt sense linia',codi_base
+                      
+            else:
+                
+                if codi_base in codis.keys():
+                    for lin in linies:
+                        lin_code = lin[0]
+                        print codi_base , lin_code[:len(codi_base)]
+                        if codi_base == lin_code[:len(codi_base)]:
+    
+                            print 'punt de la linia: '+ lin_code,lin[1]
+                            
+                            lin[1].append(FreeCAD.Vector(float(X),float(Y),float(Z)))
+                        else:
+                            print 'punt sense linia',codi_base
                             
                     # separate the coordinates
 
