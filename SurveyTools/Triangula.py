@@ -5,6 +5,7 @@ Created on 4 oct. 2015
 '''
 import FreeCADGui
 import easygui
+import FreeCAD
 class Triangula():
     """My new command"""
  
@@ -38,7 +39,7 @@ class Triangula():
  
     def Activated(self):
         "Do something here"
-        import Base, numpy, scipy, FreeCADGui, easygui
+        import Base, numpy, scipy, FreeCADGui, easygui, Draft
         from scipy.spatial import Delaunay
         import matplotlib.pyplot as plt
         
@@ -55,7 +56,19 @@ class Triangula():
                 
                 points = numpy.array(llistaPunts)
                 tri = Delaunay(points)
-                print points[tri.simplices]
+                for t in points[tri.simplices]:
+                    triangle =[]
+                    print 't',t
+                    for p in t:
+                        x,y,z = p
+                        triangle.append(FreeCAD.Vector(x,y,z))
+                        print 'p',p
+                    Draft.makeWire(triangle,closed=True,face=True,support=None)   # create the wire open
+   
+                        
+                       # create the wire open
+                    
+                    
             return
         else:   
             easygui.msgbox('Necessites triar un grup de punts', 'Instruccions')
