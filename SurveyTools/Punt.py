@@ -3,29 +3,7 @@ class Punt_Gui():
     """My new command"""
  
     def GetResources(self):
-        return {'Pixmap'  : """
-             /* XPM */
-             static const char *test_icon[]={
-             "16 16 2 1",
-             "a c #000000",
-             ". c None",
-             "................",
-             "................",
-             "..############..",
-             "..############..",
-             "..############..",
-             "..####..........",
-             "....####........",
-             ".......####.....",
-             "..........####..",
-             "..........####..",
-             "..........####..",
-             "..############..",
-             "..############..",
-             "..############..",
-             "................",
-             "................"};
-             """, # the name of a svg file available in the resources
+        return {'Pixmap'  : ":/icons/Punt.svg", # the name of a svg file available in the resources
                 'Accel' : "", # a default shortcut (optional)
                 'MenuText': "Punt",
                 'ToolTip' : "crea un punt"}

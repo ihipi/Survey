@@ -1,14 +1,35 @@
-import icons_rc
 class Survey (Workbench):
  
     MenuText = "Survey"
     ToolTip = "Working with point, terrains and alignments"
-    Icon = ":icons/Survey.svg"
+    Icon = """
+             /* XPM */
+             static const char *test_icon[]={
+             "16 16 2 1",
+             "a c #000000",
+             ". c None",
+             "................",
+             "................",
+             "..############..",
+             "..############..",
+             "..############..",
+             "..####..........",
+             "....####........",
+             ".......####.....",
+             "..........####..",
+             "..........####..",
+             "..........####..",
+             "..############..",
+             "..############..",
+             "..############..",
+             "................",
+             "................"};
+             """
  
     def Initialize(self):
         "This function is executed when FreeCAD starts"
         from SurveyTools import Base,Punt, Importa, Triangula
-        import icons_rc # import here all the needed files that create your FreeCAD commands
+        import icons # import here all the needed files that create your FreeCAD commands
         self.list = ["Crear punt","Importa", "Triangula"] # A list of command names created in the line above
         self.appendToolbar("Survey",self.list) # creates a new toolbar with your commands
         self.appendMenu("Survey",self.list) # creates a new menu

@@ -28,45 +28,55 @@ def getComboView(mw):
     raise Exception ("No tab widget found")
 
 
-def crearPunt(name = "Point",X=0, Y=0,Z=0, Code = ''):
-    ''' makePoint(x,y,z ,[color(r,g,b),point_size]) or
-        makePoint(Vector,color(r,g,b),point_size]) -
-        creates a Point in the current document.
-        example usage: 
-        p1 = makePoint()
-        p1.ViewObject.Visibility= False # make it invisible
-        p1.ViewObject.Visibility= True  # make it visible
-        p1 = makePoint(-1,0,0) #make a point at -1,0,0
-        p1 = makePoint(1,0,0,(1,0,0)) # color = red
-        p1.X = 1 #move it in x
-        p1.ViewObject.PointColor =(0.0,0.0,1.0) #change the color-make sure values are floats
+def creaCarpeta(name='nom'):
     '''
-    obj=FreeCAD.ActiveDocument.addObject("Part::FeaturePython",str(name))
-    if isinstance(X,FreeCAD.Vector):
+    Check if a group with designed name exists or create one 
+    and return it 
+    '''
+    
+    
+    doc = FreeCAD.activeDocument()
+    for obj in doc.Objects:
+        if obj.Label == name:
+            if  obj.TypeId == 'App::DocumentObjectGroup':
+                return obj
+    
+    grp = doc.addObject("App::DocumentObjectGroup", name )
+    return grp
+
+def crearPunt(X=0, Y=0,Z=0, name = "Point",Code = '', size= 5):
+    ''' creaPunt(name, x,y,z ,code, size) or 
+        creaPunt(Vector,name, code, size)
+        create a Point with custom name and code
+    '''
+    obj=FreeCAD.ActiveDocument.addObject("Part::FeaturePython",str(name))   #create a object with your name
+    if isinstance(X,FreeCAD.Vector):      # if a Vector is  passed assigns values to x,y,z              
         Z = X.z
         Y = X.y
         X = X.x
-    Punt(obj,name, X,Y,Z,Code)
+    Punt(obj,name, X,Y,Z,Code)              #creates the object
     obj.X = X
     obj.Y = Y
     obj.Z = Z
     
-    obj.ViewObject.PointSize = 5.00
+    obj.ViewObject.PointSize = size         # asigns the size point
     obj.ViewObject.Proxy =0
     FreeCAD.ActiveDocument.recompute()
     return obj
 
+
 class Punt():
-    "The Draft Point object"
+    "Punt de topografia"
     def __init__(self, obj,name=None,x=0,y=0,z=0, c=None):
-        obj.Label = str(name)
+        #adding the object properties
+        obj.Label = str(name)                                   
         obj.addProperty("App::PropertyString","Tipus","Propietats","Descripcio").Tipus = 'Punt'
         obj.addProperty("App::PropertyString","Codi","Base","Descripcio").Codi = str(c)
         obj.addProperty("App::PropertyFloat","X","Coordenades","Location").X = x
         obj.addProperty("App::PropertyFloat","Y","Coordenades","Location").Y = y
         obj.addProperty("App::PropertyFloat","Z","Coordenades","Location").Z = z
         
-        
+        #hiding the properties Tipus and placement
         mode = 2
         obj.setEditorMode('Placement',mode)
         obj.setEditorMode("Tipus", mode)
@@ -81,9 +91,51 @@ class Punt():
             self.Type = state  
             
     def execute(self, obj):
-        import Part
-        shape = Part.Vertex(FreeCAD.Vector(obj.X,obj.Y,obj.Z))
-        obj.Shape = shape
+        import Part                         
+        punt = Part.Vertex(FreeCAD.Vector(obj.X,obj.Y,obj.Z))
+        obj.Shape = punt
+        
+    def onChanged(self, obj, prop):
+        pass 
+    
+    
+def creaSuperficie(name='superficie', punts=[],linies=None):
+    '''
+    crea un objecte superficie
+    '''
+    doc = FreeCAD.activeDocument()
+    obj = doc.addObject('App::DocumentObjectGroupPython',name)
+    Superficie(obj, name)
+    FreeCAD.ActiveDocument.recompute()
+    return obj
+    
+    
+class Superficie():
+    "objecte superficie"
+    def __init__(self, obj,name='Sup', punts=[],linies=[]):
+        #adding the object properties
+        obj.Label = str(name)                
+        obj.addProperty("App::PropertyString","Tipus","Propietats","Descripcio").Tipus = 'Superficie'
+                   
+        obj.addProperty("App::PropertyVectorList","Punts","Definition",'llista de pnts').Punts = punts
+        obj.addProperty("App::PropertyVectorList","Linies","Definition",'llista de linies').Linies = linies
+        obj.addProperty("App::PropertyVectorList","Triangles","Definition",'llista de triangles').Triangles = []
+        self.Type='Superficie'
+        mode = 2
+        obj.setEditorMode("Tipus", mode)
+        obj.Proxy= self
+        
+        
+
+    def __getstate__(self):
+        return self.Type
+
+    def __setstate__(self,state):
+        if state:
+            self.Type = state  
+            
+    def execute(self, obj):
+        pass
         
     def onChanged(self, obj, prop):
         pass 

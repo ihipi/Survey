@@ -3,36 +3,14 @@ Created on 4 oct. 2015
 
 @author: albert
 '''
-import FreeCADGui
+import FreeCADGui, icons_rc
 import easygui
 import FreeCAD
 class Triangula():
     """My new command"""
  
     def GetResources(self):
-        return {'Pixmap'  : """
-             /* XPM */
-             static const char *test_icon[]={
-             "16 16 2 1",
-             "a c #000000",
-             ". c None",
-             "................",
-             "................",
-             "..############..",
-             "..############..",
-             "..############..",
-             "..####..........",
-             "....####........",
-             ".......####.....",
-             "..........####..",
-             "..........####..",
-             "..........####..",
-             "..############..",
-             "..############..",
-             "..############..",
-             "................",
-             "................"};
-             """, # the name of a svg file available in the resources
+        return {'Pixmap'  : ":/icons/Triangula.svg", # the name of a svg file available in the resources
                 'Accel' : "", # a default shortcut (optional)
                 'MenuText': "Triangula",
                 'ToolTip' : "crea una malla de triangles"}
@@ -43,25 +21,43 @@ class Triangula():
         from scipy.spatial import Delaunay
         import matplotlib.pyplot as plt
         
-        sel = FreeCADGui.Selection.getSelection()
+        #aconsegueix la seleccio de freecad
+        nom =  easygui.enterbox('tria un nom de superficie')
         
-        if str(type(sel[0])) == "<type 'App.DocumentObjectGroup'>":
-            grup_llista = sel[0].OutList
-            print grup_llista
-            if grup_llista[1].Tipus == "Punt" : 
-                llistaPunts=[]
+        tri_grp  = Base.creaSuperficie(nom)   
+        
+        sel = FreeCADGui.Selection.getSelection() #comprova si la seleccio es un grup
+        if sel[0].TypeId == "App.DocumentObjectGroupPython":
+            #grup_llista=[]
+            #for i in range(len(sel)-1):
+            #    grup_llista.append(sel[i].OutList)    #llista d'objectes del grup
+            #print grup_llista
+            #comprova que el primer objecte sigui un Punt (Survey)
+            if grup_llista[1].Tipus == "Punt" :
+                 
+                llistaPunts_z=[]
+                llistaPunts = []
+                #agrega els punts del grup a la llista
                 for p in grup_llista:
-                    llistaPunts.append([p.X,p.Y,p.Z])
+                    llistaPunts_z.append([p.X,p.Y,p.Z])
+                    llistaPunts.append([p.X,p.Y])
                     print (p.Label,p.Codi,p.X,p.Y,p.Z)
-                
                 points = numpy.array(llistaPunts)
                 tri = Delaunay(points)
+                pointsZ = numpy.array(llistaPunts_z)
+                triZ = Delaunay(pointsZ)
+
+                print llistaPunts,llistaPunts_z
                 for t in points[tri.simplices]:
                     triangle =[]
                     print 't',t
                     for p in t:
-                        x,y,z = p
-                        triangle.append(FreeCAD.Vector(x,y,z))
+                        for pun in llistaPunts_z:
+                            if pun[0]== p[0] and pun[1]== p[1]:
+                                
+                                print 'for t in pointZ(tri.simplices)/forp in t', p
+                                x,y,z = pun
+                                triangle.append(FreeCAD.Vector(x,y,z))
                         print 'p',p
                     Draft.makeWire(triangle,closed=True,face=True,support=None)   # create the wire open
    
@@ -69,7 +65,11 @@ class Triangula():
                        # create the wire open
                     
                     
-            return
+                return
+        
+            else:   
+                easygui.msgbox('Necessites triar un grup de punts', 'Instruccions')
+
         else:   
             easygui.msgbox('Necessites triar un grup de punts', 'Instruccions')
 
