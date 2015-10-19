@@ -5,6 +5,7 @@ Created on 3 oct. 2015
 '''
 import FreeCAD
 from PySide import QtGui,QtCore
+import FreeCADGui, easygui
 
 
 def getMainWindow():
@@ -44,7 +45,7 @@ def creaCarpeta(name='nom'):
     grp = doc.addObject("App::DocumentObjectGroup", name )
     return grp
 
-def crearPunt(X=0, Y=0,Z=0, name = "Point",Code = '', size= 5):
+def crearPunt(name = "Point",X=0, Y=0,Z=0, Code = '', size= 5):
     ''' creaPunt(name, x,y,z ,code, size) or 
         creaPunt(Vector,name, code, size)
         create a Point with custom name and code
@@ -72,9 +73,9 @@ class Punt():
         obj.Label = str(name)                                   
         obj.addProperty("App::PropertyString","Tipus","Propietats","Descripcio").Tipus = 'Punt'
         obj.addProperty("App::PropertyString","Codi","Base","Descripcio").Codi = str(c)
-        obj.addProperty("App::PropertyFloat","X","Coordenades","Location").X = x
-        obj.addProperty("App::PropertyFloat","Y","Coordenades","Location").Y = y
-        obj.addProperty("App::PropertyFloat","Z","Coordenades","Location").Z = z
+        obj.addProperty("App::PropertyFloat","X","Coordenades","Location").X = float(x)
+        obj.addProperty("App::PropertyFloat","Y","Coordenades","Location").Y = float(y)
+        obj.addProperty("App::PropertyFloat","Z","Coordenades","Location").Z = float(z)
         
         #hiding the properties Tipus and placement
         mode = 2
@@ -108,6 +109,57 @@ def creaSuperficie(name='superficie', punts=[],linies=None):
     Superficie(obj, name)
     FreeCAD.ActiveDocument.recompute()
     return obj
+
+def selectPointsGroup():
+    '''
+    select all point in a group
+    @return: If a point group is selected return this group, if anything is selected return all groups of points
+    '''
+    sel = FreeCADGui.Selection.getSelection()
+    
+    
+    if len(sel)>0:
+        if sel[0].InList[0].Tipus != "Punts":
+            
+            easygui.msgbox("Selecciona una carpeta de punts o res per seleccionar tots els punts", 'Instruccions')
+        elif sel[0].Group[0].Tipus != "Punt":
+            easygui.msgbox("la carpeta ha de contenir punts ", 'Instruccions')
+
+    else:
+        doc = FreeCAD.activeDocument()
+        if len(doc.Punts.Group)>0:
+            for grp in doc.Punts.Group:
+                    
+                sel.append(grp)
+                
+        else:
+            easygui.msgbox("No hi hsn punts, fes servir l'eina importar", 'Instruccions')
+               
+                   
+    punts =[]
+    for g in sel:
+        for punt in g:
+            punts.append(punt)
+        
+    return punts
+    
+def getVectorEdges(punts=None, linies = None):
+    '''
+    It creats a list of vectors an a list of edges
+    @return: return a strin for a triangle file 
+                if edges *.poly
+                if only points *.nodes
+    '''
+    if punts 00None:
+        punts=selectPointsGroup()
+    txt = ""
+    txt += str(len(punts))+'\t'+'1'
+    if linies !=None :
+        txt += '\t1\n'
+    else:
+        txt += '\n'
+       
+    
     
     
 class Superficie():

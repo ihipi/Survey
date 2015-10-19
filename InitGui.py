@@ -7,9 +7,11 @@ class Survey (Workbench):
  
     def Initialize(self):
         "This function is executed when FreeCAD starts"
-        from SurveyTools import Base,Punt, Importa, Triangula
+        from SurveyTools import Punt, Importa, Triangula
+        from SurveyTools import Tools
+        from SurveyTools import newProject
         import icons_rc # import here all the needed files that create your FreeCAD commands
-        self.list = ["Crear punt","Importa", "Triangula"] # A list of command names created in the line above
+        self.list = ["New project","Crear punt","Importa", "Triangula"] # A list of command names created in the line above
         self.appendToolbar("Survey",self.list) # creates a new toolbar with your commands
         self.appendMenu("Survey",self.list) # creates a new menu
         #self.appendMenu(["An existing Menu","My submenu"],self.list) # appends a submenu to an existing menu

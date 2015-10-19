@@ -1,6 +1,7 @@
 <RCC>
     <qresource>
         <file>icons/Punt.svg</file>
+        <file>icons/newProject.svg</file>
         <file>icons/Importa.svg</file>
         <file>icons/Imp.svg</file>
         <file>icons/Triangula.svg</file>

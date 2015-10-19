@@ -15,7 +15,9 @@ class Importa():
  
     def Activated(self):
         "Do something here"
-        import Base, easygui, Draft, Importa_Gui
+        import easygui, Draft
+        from SurveyTools import Tools
+
         
        
 
@@ -23,9 +25,18 @@ class Importa():
         fitxer = easygui.fileopenbox('Tria un fitxer de punts (nom, x, y, z, codi)',default="/home/albert/.FreeCAD/Mod/Survey/puntos.PUN")                     # path and name of file.txt
         
         grup =  easygui.enterbox('tria un nom de grup')
-        doc = FreeCAD.activeDocument()
-        grp = Base.creaCarpeta('Punts')
+        try:
+            
+            grp = FreeCAD.activeDocument().Punts
+            
+        except:
+            import newProject as np
+            np.creaProjecte()
+            grp = FreeCAD.activeDocument().Punts
+            
         
+        if grup == '':
+            grup = 'New points'
         grp_punts  = grp.newObject("App::DocumentObjectGroupPython",grup)
 
         
@@ -44,7 +55,7 @@ class Importa():
             
             
                      
-            p = Base.crearPunt(float(X),float(Y),float(Z),str(N),C)         # create points (uncomment for use)
+            p = Tools.crearPunt(str(N),float(X),float(Y),float(Z),C)         # create points (uncomment for use)
             
             grp_punts.addObject(p)
             
@@ -103,7 +114,7 @@ class Importa():
         print linies
             
         if easygui.ynbox("Voleu crear les linies de rotura?"):
-            grp_linies = Base.creaCarpeta('Rotures')
+            grp_linies = FreeCAD.activeDocument().Breaklines
             for c in codis.keys():
                 grp_linies.newObject("App::DocumentObjectGroupPython",c.split('_')[0])
 

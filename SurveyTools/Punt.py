@@ -10,8 +10,8 @@ class Punt_Gui():
  
     def Activated(self):
         "Do something here"
-        import Base
-        Base.crearPunt('name', 5, 5, 5, 'Code')
+        from SurveyTools import Tools
+        Tools.crearPunt('name', 5, 5, 5, 'Code')
         return
  
     def IsActive(self):

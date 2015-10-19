@@ -57,3 +57,9 @@ class Importa_Dialog(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QtGui.QApplication.translate("Dialog", "Tab 1", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QtGui.QApplication.translate("Dialog", "Tab 2", None, QtGui.QApplication.UnicodeUTF8))
 
+
+
+imp_gui = QtGui.QWidget()
+imp_gui.ui = Importa_Dialog()
+imp_gui.ui.setupUi(imp_gui)
+imp_gui.show()
