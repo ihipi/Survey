@@ -4,6 +4,7 @@ Created on 4 oct. 2015
 @author: albert
 '''
 import FreeCAD,FreeCADGui, icons_rc
+import Part
 class Importa():
     """My new command"""
  
@@ -123,7 +124,8 @@ class Importa():
                 for punt in k[1]:
                     l.append(punt)
               
-                wire=Draft.makeWire(l,closed=False,face=False,support=None)   # create the wire open
+                #wire=Draft.makeWire(l,closed=False,face=False,support=None)   # create the wire open
+                wire = Part.wire
                 wire.Label = k[0]
                 for cod in grp_linies.Group:
                     label = cod.Label

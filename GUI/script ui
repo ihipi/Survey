@@ -1,0 +1,1 @@
+pyside-uic -o output.py input.ui

@@ -138,17 +138,29 @@ def selectPointsGroup():
                    
     punts =[]
     for g in sel:
-        for punt in g:
+        for punt in g.Group:
             punts.append(punt)
-        
+
     return punts
     
-def getVectorEdges(punts=None, linies = None):
+    
+    
+def getTxtTriangle(punts=None, linies = None):
     '''
     It creats a list of vectors an a list of edges
     @return: return a strin for a triangle file 
                 if edges *.poly
                 if only points *.nodes
+                
+                
+              #  First line: <# of vertices> <dimension (must be 2)> <# of attributes> <# of boundary markers (0 or 1)>
+              #  Following lines: <vertex #> <x> <y> [attributes] [boundary marker]
+              #  One line: <# of segments> <# of boundary markers (0 or 1)>
+              #  Following lines: <segment #> <endpoint> <endpoint> [boundary marker]
+              #  One line: <# of holes>
+              #  Following lines: <hole #> <x> <y>
+              #  Optional line: <# of regional attributes and/or area constraints>
+              #  Optional following lines: <region #> <x> <y> <attribute> <maximum area> 
     '''
     if punts 00None:
         punts=selectPointsGroup()
@@ -157,9 +169,14 @@ def getVectorEdges(punts=None, linies = None):
     if linies !=None :
         txt += '\t1\n'
     else:
-        txt += '\n'
-       
-    
+        txt += '\t0\n'
+    num_p = 0
+    for p in punts:
+        if linies !=None :
+            txt += num_p+'\t'+p.X+'\t'+p.Y+'\t'+p.Z+'\n'
+        else:
+            txt += num_p+'\t'+p.X+'\t'+p.Y+'\t'+p.Z+'\n'
+    return txt
     
     
 class Superficie():
