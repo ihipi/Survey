@@ -8,6 +8,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PySide import QtCore, QtGui
+from SurveyTools.Tools import selectPointsGroup
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -67,10 +68,13 @@ class Ui_Form(object):
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
-        super(Codes_Gui, self).__init__(parent)
+        super(Codes_Gui, self)
+        from SurveyTools.Tools import selectPointsGroup
+        for p in selectPointsGroup():
+            self.ui.llistaCodis.addItem(p.Codi)
         self.ui =Ui_Form()
         self.ui.setupUi(self)
-        self.ui.llistaCodis
+        
 
 def Codes_Gui(parent=None):
     mySW = MainWindow(parent)

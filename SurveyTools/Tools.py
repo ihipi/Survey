@@ -162,7 +162,7 @@ def getTxtTriangle(punts=None, linies = None):
               #  Optional line: <# of regional attributes and/or area constraints>
               #  Optional following lines: <region #> <x> <y> <attribute> <maximum area> 
     '''
-    if punts 00None:
+    if punts ==None:
         punts=selectPointsGroup()
     txt = ""
     txt += str(len(punts))+'\t'+'1'
