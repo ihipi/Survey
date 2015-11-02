@@ -72,31 +72,44 @@ class Ui_Form(object):
 class MainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
-        
+        self.doc = FreeCAD.activeDocument()
+        self.punts =[]
+        self.linies = self.doc.getObject("Breaklines").Codis
         self.ui = Ui_Form()
         self.ui.setupUi(self)
         self.ui.pushButton_2.clicked.connect(self.add)
         self.ui.pushButton.clicked.connect(self.remove)
 
-        for p in Tools.selectPointsGroup(codes_dict=True):
+        for p in self.linies:
             
-            self.ui.llistaCodis.addItem(unicode(p))
+            self.ui.llistaCodisLinia.addItem(p)
+
+        
+        for p in Tools.selectPointsGroup(codes_dict=True):
+            if p not in self.linies:
+                self.ui.llistaCodis.addItem(unicode(p))
             
     def add(self):
         llista = self.ui.llistaCodis
         self.ui.llistaCodis.takeItem(llista.currentRow())
         self.ui.llistaCodisLinia.addItem(llista.currentItem().text())
-        b = FreeCAD.activeDocument()
         codesList = []
         for i in xrange(self.ui.llistaCodisLinia.count()):
             codesList.append(unicode(str(self.ui.llistaCodisLinia.item(i).text()), 'utf-8'))
         
             
-        b.getObject("Breaklines").Codis = codesList
+        self.doc.getObject("Breaklines").Codis = codesList
+        
     def remove(self):
         llista = self.ui.llistaCodisLinia
         self.ui.llistaCodisLinia.takeItem(llista.currentRow())
         self.ui.llistaCodis.addItem(llista.currentItem().text())
+        codesList = []
+        for i in xrange(self.ui.llistaCodisLinia.count()):
+            codesList.append(unicode(str(self.ui.llistaCodisLinia.item(i).text()), 'utf-8'))
+        
+            
+        self.doc.getObject("Breaklines").Codis = codesList
             
         
 def Codes_Gui(parent=None):
