@@ -31,12 +31,12 @@ class CarpetaProjecte():
         #adding the object properties
         obj.Label = str(name)                
         obj.addProperty("App::PropertyString","Tipus","Propietats","Descripcio").Tipus = tipus
-        if tipus == "breaklines":
-            obj.addProperty("App::PropertyStringList","Codis","Propietats","LLista de codis existents").Tipus = []
+        if tipus == "Breaklines":
+            obj.addProperty("App::PropertyStringList","Codis","Propietats","LLista de codis existents").Codis = []
         self.Type=tipus
         mode = 1
-        obj.setEditorMode("Tipus", mode)
-        obj.setEditorMode("Label", mode)
+        obj.setEditorMode("Tipus", 2)
+        obj.setEditorMode("Label", 2)
         obj.Proxy= self
         
         
@@ -55,8 +55,7 @@ class CarpetaProjecte():
         if prop == 'Label' or prop== 'Name':
             obj.Label = obj.Tipus
             
-        elif prop == "Codis":
-            obj.Codis = prop
+
 
 def creaCarpetaProjecte(name='nom', tipus='Tipus', doc = None):
     '''

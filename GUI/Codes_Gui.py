@@ -8,11 +8,12 @@
 # WARNING! All changes made in this file will be lost!
 
 from PySide import QtCore, QtGui
-from SurveyTools.Tools import selectPointsGroup
+from SurveyTools import Tools
+import FreeCAD,FreeCADGui
 
 class Ui_Form(object):
     def setupUi(self, Form):
-        Form.setObjectName("Form")
+        Form.setObjectName("Codes definition")
         Form.resize(793, 494)
         self.frame = QtGui.QFrame(Form)
         self.frame.setGeometry(QtCore.QRect(10, 10, 771, 471))
@@ -62,22 +63,44 @@ class Ui_Form(object):
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(QtGui.QApplication.translate("Form", "Form", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushButton_2.setText(QtGui.QApplication.translate("Form", "PushButton", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushButton.setText(QtGui.QApplication.translate("Form", "PushButton", None, QtGui.QApplication.UnicodeUTF8))
+        self.pushButton_2.setText(QtGui.QApplication.translate("Form", ">", None, QtGui.QApplication.UnicodeUTF8))
+        self.pushButton.setText(QtGui.QApplication.translate("Form", "<", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox.setTitle(QtGui.QApplication.translate("Form", "Code Configuration", None, QtGui.QApplication.UnicodeUTF8))
+        
+
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
-        super(Codes_Gui, self)
-        from SurveyTools.Tools import selectPointsGroup
-        for p in selectPointsGroup():
-            self.ui.llistaCodis.addItem(p.Codi)
-        self.ui =Ui_Form()
-        self.ui.setupUi(self)
+        super(MainWindow, self).__init__(parent)
         
+        self.ui = Ui_Form()
+        self.ui.setupUi(self)
+        self.ui.pushButton_2.clicked.connect(self.add)
+        self.ui.pushButton.clicked.connect(self.remove)
 
+        for p in Tools.selectPointsGroup(codes_dict=True):
+            
+            self.ui.llistaCodis.addItem(unicode(p))
+            
+    def add(self):
+        llista = self.ui.llistaCodis
+        self.ui.llistaCodis.takeItem(llista.currentRow())
+        self.ui.llistaCodisLinia.addItem(llista.currentItem().text())
+        b = FreeCAD.activeDocument()
+        codesList = []
+        for i in xrange(self.ui.llistaCodisLinia.count()):
+            codesList.append(unicode(str(self.ui.llistaCodisLinia.item(i).text()), 'utf-8'))
+        
+            
+        b.getObject("Breaklines").Codis = codesList
+    def remove(self):
+        llista = self.ui.llistaCodisLinia
+        self.ui.llistaCodisLinia.takeItem(llista.currentRow())
+        self.ui.llistaCodis.addItem(llista.currentItem().text())
+            
+        
 def Codes_Gui(parent=None):
-    mySW = MainWindow(parent)
+    mySW = MainWindow(Tools.getMainWindow())
     mySW.show()
     
     

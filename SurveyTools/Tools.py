@@ -110,7 +110,7 @@ def creaSuperficie(name='superficie', punts=[],linies=None):
     FreeCAD.ActiveDocument.recompute()
     return obj
 
-def selectPointsGroup():
+def selectPointsGroup(codes_dict=False):
     '''
     select all point in a group
     @return: If a point group is selected return this group, if anything is selected return all groups of points
@@ -136,11 +136,22 @@ def selectPointsGroup():
             easygui.msgbox("No hi hsn punts, fes servir l'eina importar", 'Instruccions')
                
                    
-    punts =[]
-    for g in sel:
-        for punt in g.Group:
-            punts.append(punt)
-
+    punts =None
+    if not codes_dict:
+        punts =[]
+        for g in sel:
+            for punt in g.Group:
+                punts.append(punt)
+    else:
+        punts = set()
+        for g in sel:
+            for punt in g.Group:
+                Code = punt.Codi.split(',')
+                for c in Code:
+                    if not c[-2:] == ' I':
+                        punts.add(c)
+        
+                    
     return punts
     
     
