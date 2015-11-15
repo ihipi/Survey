@@ -21,7 +21,7 @@ class Survey (Workbench):
             grp = FreeCAD.activeDocument().Punts
             
         except:
-            import newProject as np
+            from SurveyTools import newProject as np
             np.creaProjecte()
             grp = FreeCAD.activeDocument().Punts
             

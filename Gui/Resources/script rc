@@ -1,0 +1,1 @@
+pyside-rcc -o output.py path/to/file/input.ui

@@ -9,7 +9,7 @@
 
 from PySide import QtCore, QtGui
 from SurveyTools import Tools
-import FreeCAD,FreeCADGui
+import FreeCAD,FreeCADGui, Draft, Part
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -56,6 +56,9 @@ class Ui_Form(object):
         self.groupBox.setAlignment(QtCore.Qt.AlignCenter)
         self.groupBox.setFlat(False)
         self.groupBox.setObjectName("groupBox")
+        self.pushButton_uneix = QtGui.QPushButton(self.verticalLayoutWidget)
+        self.pushButton_uneix.setObjectName("pushButton_uneix")
+  
         self.verticalLayout.addWidget(self.frame_2)
 
         self.retranslateUi(Form)
@@ -65,53 +68,114 @@ class Ui_Form(object):
         Form.setWindowTitle(QtGui.QApplication.translate("Form", "Form", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton_2.setText(QtGui.QApplication.translate("Form", ">", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton.setText(QtGui.QApplication.translate("Form", "<", None, QtGui.QApplication.UnicodeUTF8))
+        self.pushButton_uneix.setText(QtGui.QApplication.translate("Form", "Uneix codis de linia", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox.setTitle(QtGui.QApplication.translate("Form", "Code Configuration", None, QtGui.QApplication.UnicodeUTF8))
         
 
-
+        
 class MainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.doc = FreeCAD.activeDocument()
-        self.punts =[]
-        self.linies = self.doc.getObject("Breaklines").Codis
         self.ui = Ui_Form()
         self.ui.setupUi(self)
         self.ui.pushButton_2.clicked.connect(self.add)
         self.ui.pushButton.clicked.connect(self.remove)
-
-        for p in self.linies:
-            
+        self.ui.pushButton_uneix.clicked.connect(self.uneix)
+        for p in self.doc.getObject("Breaklines").Codis:
             self.ui.llistaCodisLinia.addItem(p)
-
-        
+            
         for p in Tools.selectPointsGroup(codes_dict=True):
-            if p not in self.linies:
+            if p not in  self.doc.getObject("Breaklines").Codis:
+                
                 self.ui.llistaCodis.addItem(unicode(p))
             
     def add(self):
         llista = self.ui.llistaCodis
-        self.ui.llistaCodis.takeItem(llista.currentRow())
-        self.ui.llistaCodisLinia.addItem(llista.currentItem().text())
-        codesList = []
-        for i in xrange(self.ui.llistaCodisLinia.count()):
-            codesList.append(unicode(str(self.ui.llistaCodisLinia.item(i).text()), 'utf-8'))
-        
-            
-        self.doc.getObject("Breaklines").Codis = codesList
+        self.ui.llistaCodisLinia.addItem(self.ui.llistaCodis.takeItem(llista.currentRow()))#llista.currentItem().text()) 
+        self.actualitzaCodis()
         
     def remove(self):
         llista = self.ui.llistaCodisLinia
-        self.ui.llistaCodisLinia.takeItem(llista.currentRow())
-        self.ui.llistaCodis.addItem(llista.currentItem().text())
+        self.ui.llistaCodis.addItem(self.ui.llistaCodisLinia.takeItem(llista.currentRow()))
+        self.actualitzaCodis()
+
+        
+    def actualitzaCodis(self):
+        llista = self.ui.llistaCodisLinia
+
         codesList = []
-        for i in xrange(self.ui.llistaCodisLinia.count()):
+        for i in xrange(llista.count()):
             codesList.append(unicode(str(self.ui.llistaCodisLinia.item(i).text()), 'utf-8'))
         
             
-        self.doc.getObject("Breaklines").Codis = codesList
-            
+        self.doc.getObject("Breaklines").Codis = codesList     
         
+    def uneix(self): 
+        linies = set(self.doc.getObject("Breaklines").Codis)
+        print linies
+        breaklines = dict()
+        linenum = dict()
+        for i in linies:
+            breaklines[i]= dict()
+            linenum[i]=0
+        
+        print Tools.selectPointsGroup()
+        for p in Tools.selectPointsGroup():
+            print p.Label+"_"+p.Codi
+            print breaklines
+            
+            if p.Inici:
+                key = unicode(p.Codi)
+
+                print 'codi amb " I"', key
+                if key in linies:
+                    print 'nova linia'
+                    
+                    
+                    print key
+                    linenum[key]= linenum[key]+1
+
+                    breaklines[key][key+'_'+str(linenum[key])]=[p]
+                
+            elif p.Codi in linies:
+                key = unicode(p.Codi)
+                if len(breaklines[key])==0:
+                    print 'nova linia sense " I"'
+                    breaklines[key][key+'_'+str(linenum[key])]=[p]
+                
+                else:
+                    print 'linia existent'
+                
+                    breaklines[key][p.Codi+'_'+str(linenum[key])].append(p)
+        
+        
+        breakline_group = self.doc.getObject("Breaklines")
+        for codi, linia in breaklines.iteritems():
+            k_grup = breakline_group.newObject("App::DocumentObjectGroupPython",codi)
+            #k_grup.addProperty("App::PropertyLinkList","Linia","Definition",'llista els punts de la linia').Linia = []
+
+            for nom, punts in linia.iteritems():
+                l=[]
+                l_prop = []
+                # crear llista de tuplas de (X,Y,Z)
+                for punt in punts:
+                    l_prop.append(punt) 
+                    l.append((punt.X,punt.Y,punt.Z))
+                
+        
+                if nom not in self.doc.getObjectsByLabel(nom) :
+                    print 'if'
+
+                    wire=Draft.makeWire(l,closed=False,face=False,support=None)   # create the wire open
+                    wire.Label = nom  
+                    k_grup.addObject(wire)
+                    #k_grup.Linia= l_prop
+            
+                else:
+                    print 'else'
+            
+    
 def Codes_Gui(parent=None):
     mySW = MainWindow(Tools.getMainWindow())
     mySW.show()
