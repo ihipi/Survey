@@ -108,6 +108,11 @@ class MainWindow(QtGui.QMainWindow):
         for i in xrange(llista.count()):
             codesList.append(unicode(str(self.ui.llistaCodisLinia.item(i).text()), 'utf-8'))
         
+        resta = list(set(self.doc.getObject("Breaklines").Codis)-set(codesList))
+        if len(resta)>0:
+            for c in resta:
+                self.doc.getObject(c).removeObjectsFromDocument()
+                self.doc.removeObject(c)
             
         self.doc.getObject("Breaklines").Codis = codesList     
         
@@ -126,7 +131,7 @@ class MainWindow(QtGui.QMainWindow):
             print breaklines
             
             if p.Inici:
-                key = unicode(p.Codi)
+                key = str(p.Codi)
 
                 print 'codi amb " I"', key
                 if key in linies:
@@ -152,29 +157,59 @@ class MainWindow(QtGui.QMainWindow):
         
         breakline_group = self.doc.getObject("Breaklines")
         for codi, linia in breaklines.iteritems():
-            k_grup = breakline_group.newObject("App::DocumentObjectGroupPython",codi)
-            #k_grup.addProperty("App::PropertyLinkList","Linia","Definition",'llista els punts de la linia').Linia = []
-
+            exists =False
+            for codigrup in breakline_group.Group:
+                print '161', codigrup.Label,codi
+                if codigrup.Label == codi:
+                    k_grup = codigrup
+                    exists = True
+            if not exists:
+                k_grup = breakline_group.newObject("App::DocumentObjectGroupPython",str(codi))
+                #k_grup.addProperty("App::PropertyLinkList","Linia","Definition",'llista els punts de la linia').Linia = []
+            print '169',exists
+            
             for nom, punts in linia.iteritems():
+                print '172',nom, punts
                 l=[]
                 l_prop = []
                 # crear llista de tuplas de (X,Y,Z)
                 for punt in punts:
                     l_prop.append(punt) 
                     l.append((punt.X,punt.Y,punt.Z))
+                    
+                    
+                    
+                linia_exists = False
+                print l
+                for lin in k_grup.Group:
+                    print '185',lin.Label,nom
+                    if lin.Label == nom:
+                        linia_exists=True
+                print linia_exists
                 
-        
-                if nom not in self.doc.getObjectsByLabel(nom) :
-                    print 'if'
-
+                if not linia_exists:
                     wire=Draft.makeWire(l,closed=False,face=False,support=None)   # create the wire open
                     wire.Label = nom  
-                    k_grup.addObject(wire)
-                    #k_grup.Linia= l_prop
-            
-                else:
-                    print 'else'
-            
+                    k_grup.addObject(wire)                    
+                
+                
+                
+                
+
+#                 if nom not in self.doc.getObjectsByLabel(nom) :
+#                     print 'if'
+# 
+#                     wire=Draft.makeWire(l,closed=False,face=False,support=None)   # create the wire open
+#                     wire.Label = nom  
+#                     k_grup.addObject(wire)
+#                     #k_grup.Linia= l_prop
+#             
+#                 else:
+#                     wire=Draft.makeWire(l,closed=False,face=False,support=None)   # create the wire open
+#                     wire.Label = nom  
+#                     self.doc.getObject(nom).addObject(wire)
+#                     print 'else'
+                
     
 def Codes_Gui(parent=None):
     mySW = MainWindow(Tools.getMainWindow())

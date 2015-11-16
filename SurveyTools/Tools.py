@@ -301,6 +301,11 @@ def triangula(linies):
     Part.show(M)
     doc.getObject("Surfaces").addObject(M)
     
+    FreeCADGui.activeDocument().getObject(M-Label).LineColor = (0.26,0.80,0.00)
+    FreeCADGui.activeDocument().getObject(M-Label).ShapeColor = (0.71,0.74,0.77)
+    FreeCADGui.activeDocument().getObject(M-Label).LineColor = (0.27,0.53,0.56)
+    
+    
 def creaSuperficie(name='superficie', punts=[],linies=None):
     '''
     crea un objecte superficie

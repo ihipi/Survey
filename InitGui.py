@@ -16,15 +16,7 @@ class Survey (Workbench):
  
     def Activated(self):
         "This function is executed when the workbench is activated"
-        try:
-            
-            grp = FreeCAD.activeDocument().Punts
-            
-        except:
-            from SurveyTools import newProject as np
-            np.creaProjecte()
-            grp = FreeCAD.activeDocument().Punts
-            
+    
         return
  
     def Deactivated(self):

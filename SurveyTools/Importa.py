@@ -56,7 +56,7 @@ class Importa():
             
             
                      
-            p = Tools.crearPunt(str(N),float(X),float(Y),float(Z),C)         # create points (uncomment for use)
+            p = Tools.crearPunt(N,float(X),float(Y),float(Z),C)         # create points (uncomment for use)
             
             grp_punts.addObject(p)
             
@@ -115,23 +115,25 @@ class Importa():
         print linies
             
         if easygui.ynbox("Voleu crear les linies de rotura?"):
-            grp_linies = FreeCAD.activeDocument().Breaklines
-            for c in codis.keys():
-                grp_linies.newObject("App::DocumentObjectGroupPython",c.split('_')[0])
-
-            for k in linies:
-                l=[]
-                for punt in k[1]:
-                    l.append(punt)
-              
-                #wire=Draft.makeWire(l,closed=False,face=False,support=None)   # create the wire open
-                wire = Part.wire
-                wire.Label = k[0]
-                for cod in grp_linies.Group:
-                    label = cod.Label
-                    if label == k[0].split('_')[0]:
-                        cod.addObject(wire)
-        #print codis, code_list
+            from GUI import Codes_Gui
+            Codes_Gui.Codes_Gui()
+#             grp_linies = FreeCAD.activeDocument().Breaklines
+#             for c in codis.keys():
+#                 grp_linies.newObject("App::DocumentObjectGroupPython",c.split('_')[0])
+# 
+#             for k in linies:
+#                 l=[]
+#                 for punt in k[1]:
+#                     l.append(punt)
+#               
+#                 #wire=Draft.makeWire(l,closed=False,face=False,support=None)   # create the wire open
+#                 wire = Part.Wire
+#                 wire.Label = k[0]
+#                 for cod in grp_linies.Group:
+#                     label = cod.Label
+#                     if label == k[0].split('_')[0]:
+#                         cod.addObject(wire)
+#         #print codis, code_list
         file.close()
         FreeCADGui.SendMsgToActiveView("ViewFit")
         return
